@@ -1,0 +1,31 @@
+.bg{
+    -fx-background-color: #222;
+}
+
+.hbox{
+    -fx-min-width: 400;
+}
+
+.separator{
+    -fx-color: #333
+}
+
+.text{
+    -fx-text-fill: #666;
+    -fx-font-family: Georgia;
+    -fx-font-weight: bold;
+    -fx-font-size: 16;
+}
+
+.label-name{
+    -fx-min-width: 200;
+
+}
+
+.text-field{
+    -fx-max-width: 100;
+}
+
+.canvas{
+    -fx-color: #FFF;
+}
