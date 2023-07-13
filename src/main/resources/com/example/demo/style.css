@@ -6,8 +6,10 @@
     -fx-min-width: 400;
 }
 
-.separator{
-    -fx-color: #333
+.separator .line{
+    -fx-background-color: #111;
+    -fx-pref-height: 2;
+    -fx-border-color: null;
 }
 
 .text{
@@ -27,5 +29,5 @@
 }
 
 .canvas{
-    -fx-color: #FFF;
+    -fx-color: #111;
 }

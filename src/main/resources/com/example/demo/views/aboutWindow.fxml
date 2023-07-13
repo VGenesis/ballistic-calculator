@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="430.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox layoutX="13.0" layoutY="12.0" prefHeight="278.0" prefWidth="402.0">
+         <children>
+            <VBox prefHeight="278.0" prefWidth="186.0">
+               <children>
+                  <ImageView fitHeight="187.0" fitWidth="173.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../icon.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </VBox>
+            <Separator orientation="VERTICAL" prefHeight="200.0">
+               <HBox.margin>
+                  <Insets left="8.0" right="8.0" />
+               </HBox.margin>
+            </Separator>
+            <VBox prefHeight="289.0" prefWidth="244.0">
+               <children>
+                  <Label alignment="CENTER" prefHeight="40.0" prefWidth="247.0" text="Ballistic Calculator">
+                     <font>
+                        <Font name="Arial Bold" size="16.0" />
+                     </font>
+                     <padding>
+                        <Insets bottom="4.0" top="4.0" />
+                     </padding>
+                  </Label>
+                  <Separator prefHeight="25.0" prefWidth="247.0">
+                     <opaqueInsets>
+                        <Insets bottom="8.0" top="8.0" />
+                     </opaqueInsets>
+                     <padding>
+                        <Insets bottom="4.0" top="4.0" />
+                     </padding>
+                  </Separator>
+                  <Label alignment="TOP_LEFT" prefHeight="217.0" prefWidth="247.0" text="A tool for simulating and plotting projectile trajectory." wrapText="true">
+                     <font>
+                        <Font name="Arial" size="12.0" />
+                     </font>
+                     <padding>
+                        <Insets left="4.0" right="4.0" />
+                     </padding>
+                     <VBox.margin>
+                        <Insets left="4.0" right="4.0" />
+                     </VBox.margin>
+                  </Label>
+                  <VBox prefHeight="58.0" prefWidth="207.0" VBox.vgrow="ALWAYS">
+                     <children>
+                        <Label alignment="CENTER_RIGHT" prefHeight="6.0" prefWidth="244.0" text="Java: JRE/JDK 18" VBox.vgrow="ALWAYS">
+                           <font>
+                              <Font name="Arial Bold" size="10.0" />
+                           </font>
+                           <opaqueInsets>
+                              <Insets bottom="4.0" top="4.0" />
+                           </opaqueInsets>
+                           <padding>
+                              <Insets bottom="1.0" top="1.0" />
+                           </padding>
+                        </Label>
+                        <Label alignment="CENTER_RIGHT" prefHeight="6.0" prefWidth="244.0" text="Version: 1.1" VBox.vgrow="ALWAYS">
+                           <font>
+                              <Font name="Arial Bold" size="10.0" />
+                           </font>
+                           <opaqueInsets>
+                              <Insets bottom="4.0" top="4.0" />
+                           </opaqueInsets>
+                           <padding>
+                              <Insets bottom="1.0" top="1.0" />
+                           </padding>
+                        </Label>
+                        <Separator prefWidth="200.0" VBox.vgrow="ALWAYS">
+                           <opaqueInsets>
+                              <Insets bottom="4.0" top="4.0" />
+                           </opaqueInsets>
+                           <VBox.margin>
+                              <Insets bottom="4.0" top="4.0" />
+                           </VBox.margin>
+                           <padding>
+                              <Insets bottom="1.0" top="1.0" />
+                           </padding>
+                        </Separator>
+                        <Label alignment="CENTER_RIGHT" prefHeight="0.0" prefWidth="244.0" text="Copyright(c) 2023 Veljko Grujić" VBox.vgrow="ALWAYS">
+                           <font>
+                              <Font name="Arial Bold" size="10.0" />
+                           </font>
+                           <opaqueInsets>
+                              <Insets bottom="4.0" top="4.0" />
+                           </opaqueInsets>
+                           <padding>
+                              <Insets bottom="1.0" top="1.0" />
+                           </padding>
+                        </Label>
+                        <Label alignment="CENTER_RIGHT" prefHeight="6.0" prefWidth="244.0" text="E-mail: vgrujic313@gmail.com" VBox.vgrow="ALWAYS">
+                           <font>
+                              <Font name="Arial Bold" size="10.0" />
+                           </font>
+                           <opaqueInsets>
+                              <Insets bottom="4.0" top="4.0" />
+                           </opaqueInsets>
+                           <padding>
+                              <Insets bottom="1.0" top="1.0" />
+                           </padding>
+                        </Label>
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>

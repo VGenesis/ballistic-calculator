@@ -44,7 +44,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" styleClass="bg" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" styleClass="bg" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.controllers.AppController">
   <children>
       <VBox prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
          <children>
@@ -52,19 +52,38 @@
             <menus>
               <Menu mnemonicParsing="false" text="File">
                 <items>
-                  <MenuItem mnemonicParsing="false" text="Quit" />
+                        <Menu mnemonicParsing="false" text="Import">
+                           <items>
+                              <MenuItem fx:id="importMenuParams" mnemonicParsing="false" onAction="#importParams" text="Parameters" />
+                              <Menu mnemonicParsing="false" text="Graph">
+                                <items>
+                                    <MenuItem fx:id="importMenuXLSX" mnemonicParsing="false" onAction="#importXLSX" text="XLSX" />
+                                    <MenuItem fx:id="importMenuCSV" mnemonicParsing="false" onAction="#importCSV" text="CSV" />
+                                    <MenuItem fx:id="importMenuJSON" mnemonicParsing="false" onAction="#importJSON" text="JSON" />
+                                </items>
+                              </Menu>
+                           </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Export">
+                          <items>
+                              <MenuItem fx:id="exportMenuXLSX" mnemonicParsing="false" onAction="#exportXLSX" text="XLSX" />
+                              <MenuItem fx:id="exportMenuCSV" mnemonicParsing="false" onAction="#exportCSV" text="CSV" />
+                              <MenuItem fx:id="exportMenuJSON" mnemonicParsing="false" onAction="#exportJSON" text="JSON" />
+                          </items>
+                        </Menu>
+                  <MenuItem fx:id="quitMenuItem" mnemonicParsing="false" onAction="#quit" text="Quit" />
                 </items>
               </Menu>
               <Menu mnemonicParsing="false" text="Help">
                 <items>
-                  <MenuItem mnemonicParsing="false" text="About" />
+                  <MenuItem fx:id="aboutMenuItem" mnemonicParsing="false" onAction="#openAboutWindow" text="About" />
                 </items>
               </Menu>
             </menus>
           </MenuBar>
           <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="668.0" prefWidth="893.0" styleClass="bg" stylesheets="@style.css" VBox.vgrow="ALWAYS">
                <children>
-                  <VBox prefHeight="535.0" prefWidth="759.0" styleClass="hbox" stylesheets="@style.css" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0">
+                  <VBox prefHeight="535.0" prefWidth="759.0" styleClass="hbox" stylesheets="@style.css" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0">
                      <children>
                         <HBox prefHeight="100.0" prefWidth="200.0">
                            <children>
@@ -77,8 +96,8 @@
                                                 <Insets right="4.0" />
                                              </HBox.margin>
                                           </Label>
-                                          <TextField alignment="CENTER_RIGHT" styleClass="textfield" stylesheets="@style.css" />
-                                          <Label minHeight="20.0" minWidth="80.0" styleClass="text" stylesheets="@style.css" text="m/s" HBox.hgrow="SOMETIMES" />
+                                          <TextField fx:id="speedField" alignment="CENTER_RIGHT" onKeyTyped="#onParameterUpdate" styleClass="textfield" stylesheets="@style.css" />
+                                          <Label minHeight="20.0" minWidth="80.0" prefHeight="20.0" prefWidth="61.0" styleClass="text" stylesheets="@style.css" text="m/s" HBox.hgrow="SOMETIMES" />
                                        </children>
                                     </HBox>
                                     <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
@@ -88,7 +107,7 @@
                                                 <Insets right="4.0" />
                                              </HBox.margin>
                                           </Label>
-                                          <TextField alignment="CENTER_RIGHT" styleClass="textfield" stylesheets="@style.css" />
+                                          <TextField fx:id="angleField" alignment="CENTER_RIGHT" onKeyTyped="#onParameterUpdate" styleClass="textfield" stylesheets="@style.css" />
                                           <Label minHeight="20.0" minWidth="80.0" styleClass="text" stylesheets="@style.css" text="degrees" HBox.hgrow="SOMETIMES" />
                                        </children>
                                     </HBox>
@@ -99,7 +118,7 @@
                                                 <Insets right="4.0" />
                                              </HBox.margin>
                                           </Label>
-                                          <TextField alignment="CENTER_RIGHT" styleClass="textfield" stylesheets="@style.css" />
+                                          <TextField fx:id="heightField" alignment="CENTER_RIGHT" onKeyTyped="#onParameterUpdate" styleClass="textfield" stylesheets="@style.css" />
                                           <Label minHeight="20.0" minWidth="80.0" styleClass="text" stylesheets="@style.css" text="m" HBox.hgrow="SOMETIMES" />
                                        </children>
                                     </HBox>
@@ -114,7 +133,7 @@
                                                 <Insets right="4.0" />
                                              </HBox.margin>
                                           </Label>
-                                          <TextField alignment="CENTER_RIGHT" styleClass="textfield" stylesheets="@style.css" />
+                                          <TextField fx:id="massField" alignment="CENTER_RIGHT" onKeyTyped="#onParameterUpdate" styleClass="textfield" stylesheets="@style.css" />
                                           <Label minHeight="20.0" minWidth="80.0" styleClass="text" stylesheets="@style.css" text="g" HBox.hgrow="SOMETIMES" />
                                        </children>
                                     </HBox>
@@ -125,7 +144,7 @@
                                                 <Insets right="4.0" />
                                              </HBox.margin>
                                           </Label>
-                                          <TextField alignment="CENTER_RIGHT" styleClass="textfield" stylesheets="@style.css" />
+                                          <TextField fx:id="diameterField" alignment="CENTER_RIGHT" onKeyTyped="#onParameterUpdate" styleClass="textfield" stylesheets="@style.css" />
                                           <Label minHeight="20.0" minWidth="80.0" styleClass="text" stylesheets="@style.css" text="mm" HBox.hgrow="SOMETIMES" />
                                        </children>
                                     </HBox>
@@ -136,7 +155,7 @@
                                                 <Insets right="4.0" />
                                              </HBox.margin>
                                           </Label>
-                                          <TextField alignment="CENTER_RIGHT" styleClass="textfield" stylesheets="@style.css" text="1.204" />
+                                          <TextField fx:id="densityField" alignment="CENTER_RIGHT" onAction="#onParameterUpdate" onKeyTyped="#onParameterUpdate" styleClass="textfield" stylesheets="@style.css" text="1.204" />
                                           <Label minHeight="20.0" minWidth="80.0" styleClass="text" stylesheets="@style.css" text="kg/cb.m" HBox.hgrow="SOMETIMES" />
                                        </children>
                                     </HBox>
@@ -149,28 +168,49 @@
                               <Insets bottom="8.0" top="8.0" />
                            </VBox.margin>
                         </Separator>
-                        <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+                        <HBox prefHeight="25.0" prefWidth="794.0">
                            <children>
-                              <Label minHeight="20.0" minWidth="100.0" prefHeight="20.0" prefWidth="140.0" styleClass="text" stylesheets="@style.css" text="Distance:" HBox.hgrow="ALWAYS">
-                                 <HBox.margin>
-                                    <Insets right="4.0" />
-                                 </HBox.margin>
-                              </Label>
-                              <TextField alignment="CENTER_RIGHT" editable="false" promptText="0.0" styleClass="textfield" stylesheets="@style.css">
-                                 <HBox.margin>
-                                    <Insets />
-                                 </HBox.margin></TextField>
-                              <Label minHeight="20.0" minWidth="80.0" styleClass="text" stylesheets="@style.css" text="m" HBox.hgrow="SOMETIMES" />
+                              <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="380.0">
+                                 <children>
+                                    <Label minHeight="20.0" minWidth="100.0" prefHeight="20.0" prefWidth="140.0" styleClass="text" stylesheets="@style.css" text="Scale" HBox.hgrow="ALWAYS">
+                                       <HBox.margin>
+                                          <Insets right="4.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <TextField fx:id="scaleField" alignment="CENTER_RIGHT" onKeyTyped="#onParameterUpdate" styleClass="textfield" stylesheets="@style.css" text="1.0">
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                    </TextField>
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="318.0">
+                                 <children>
+                                    <Label minHeight="20.0" minWidth="100.0" prefHeight="20.0" prefWidth="140.0" styleClass="text" stylesheets="@style.css" text="Distance:" HBox.hgrow="ALWAYS">
+                                       <HBox.margin>
+                                          <Insets right="4.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <TextField alignment="CENTER_RIGHT" editable="false" maxWidth="116.0" prefHeight="25.0" prefWidth="116.0" promptText="0.0" styleClass="textfield" stylesheets="@style.css">
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                    </TextField>
+                                    <Label minHeight="20.0" minWidth="71.0" prefHeight="20.0" prefWidth="71.0" styleClass="text" stylesheets="@style.css" text="m" HBox.hgrow="SOMETIMES" />
+                                 </children>
+                              </HBox>
                            </children>
-                           <VBox.margin>
-                              <Insets bottom="8.0" />
-                           </VBox.margin>
                         </HBox>
-                        <AnchorPane prefHeight="530.0" prefWidth="759.0">
-                           <children>
-                              <Canvas height="408.0" width="759.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                           </children>
-                        </AnchorPane>
+                        <Separator prefWidth="200.0" stylesheets="@style.css">
+                           <VBox.margin>
+                              <Insets bottom="8.0" top="8.0" />
+                           </VBox.margin>
+                        </Separator>
+                        <Canvas fx:id="trajectoryCanvas" height="409.0" width="759.0">
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </Canvas>
                      </children>
                   </VBox>
                </children>
