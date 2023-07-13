@@ -11,3 +11,5 @@ A simple to use GUI application for calculating projectile trajectory based on t
 * Exporting to JSON and CSV
 * Importing from XLSX, JSON and CSV
 * Batch calculation through GUI/file
+
+Licensed under Creative Commons Zero 1.0 - CC0 Licence
