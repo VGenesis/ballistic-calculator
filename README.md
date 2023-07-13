@@ -13,4 +13,5 @@ A simple to use GUI application for calculating projectile trajectory based on t
 * Batch calculation through GUI/file
 
 Licensed under Creative Commons Zero 1.0 (CC0) Licence
+
 Copyright(c) 2022-2023 Veljko Grujić
