@@ -1,30 +1,39 @@
 package com.example.demo.controllers;
 
-import com.aspose.cells.*;
-
-import com.example.demo.logic.Conversions;
-import com.example.demo.logic.ProjectileModel;
+import com.example.demo.logic.RetentionFileChooser;
 import com.example.demo.logic.Vector;
+import javafx.scene.chart.XYChart;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xddf.usermodel.PresetColor;
+import org.apache.poi.xddf.usermodel.XDDFColor;
+import org.apache.poi.xddf.usermodel.XDDFSolidFillProperties;
+import org.apache.poi.xddf.usermodel.chart.*;
+import org.apache.poi.xssf.usermodel.*;
+
+import com.example.demo.logic.ProjectileModel;
 import com.example.demo.views.AboutWindow;
 import com.example.demo.views.AppGraphics;
+
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.openxmlformats.schemas.drawingml.x2006.main.CTPresetColor;
+import org.openxmlformats.schemas.drawingml.x2006.main.CTSchemeColor;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.text.DecimalFormat;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ResourceBundle;
@@ -70,6 +79,8 @@ public class AppController implements Initializable {
     private double[] parameters = new double[7];
     private final int dataCount = 30;
 
+    private Path exportFile;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.graphics = new AppGraphics(trajectoryCanvas);
@@ -89,75 +100,36 @@ public class AppController implements Initializable {
     }
 
     @FXML
-    void exportXLSX(ActionEvent ignoredEvent) {
-        FileChooser fc = new FileChooser();
-        fc.setTitle("Export CSV file");
-        fc.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("XLSX File", ".xlsx"));
-        Stage stage = new Stage();
-        File output = fc.showSaveDialog(stage);
-        if(output == null) return;
-
+    void exportXLSX(ActionEvent ignoredEvent) throws IOException {
         try {
-            if(!output.exists()) output.createNewFile();
+            RetentionFileChooser rfc = new RetentionFileChooser();
 
-            Workbook wb = new Workbook();
-            Worksheet ws = wb.getWorksheets().get(0);
-            Style centered = new Style();
-            centered.setHorizontalAlignment(TextAlignmentType.RIGHT);
-            for(int i = 1; i <= 3; i++){
-                ws.getCells().setColumnWidth(i, 15);
-                ws.getCells().setStyle(centered);
+            if (exportFile == null) {
+                URL url = this.getClass().getResource("export_options.txt");
+                exportFile = Files.createTempFile(null, ".txt");
+                InputStream in = url.openStream();
+                OutputStream out = Files.newOutputStream(exportFile);
+                in.transferTo(out);
+                in.close();
+                out.close();
             }
 
-            ws.getCells().importArray(getParamsString(), 1, 1);
+            rfc.setConfigFilePath(exportFile.toString());
+            rfc.setFormat("XLSX");
+
+            Stage stage = new Stage();
+            File output = rfc.showSaveDialog(stage, "Select XLSX file:".describeConstable());
+            if(output == null) return;
+
+            FileOutputStream outputStream = new FileOutputStream(output);
+            XSSFWorkbook workbook = new XSSFWorkbook();
 
             ProjectileModel model = new ProjectileModel(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4], parameters[5]);
-            model.setDataPoints(dataCount);
-            model.plotTrajectory();
-            ArrayList<Vector> trajectoryPlot = model.getTrajectoryPlot();
-            ArrayList<Double> timePlot = model.getTimePlot();
+            writeXSSFSheet(workbook, model);
 
-            double maxDistance = model.distance;
-            int maxDigits = (int) Math.floor(Math.log10(maxDistance));
-            int decimalCount = (maxDigits < 3)? 3 - maxDigits : 0;
-
-            DecimalFormat df = new DecimalFormat("#." + "#".repeat(decimalCount));
-            double[][] trajectoryData = Conversions.vectorToMatrix(trajectoryPlot);
-            double[] timeData = Conversions.listToArray(timePlot);
-
-            double[][] trajectory = new double[3][dataCount];
-            trajectory[0] = timeData;
-            trajectory[1] = trajectoryData[0];
-            trajectory[2] = trajectoryData[1];
-
-            double[][] trajectoryVertical = new double[dataCount][3];
-            for(int i = 0; i < trajectory.length; i++){
-                for(int j = 0; j < trajectory[0].length; j++){
-                    trajectoryVertical[j][i] = Double.parseDouble(df.format(trajectory[i][j]));
-                }
-            }
-
-            ws.getCells().importArray(new String[]{"Time:", "Distance:", "Height:"}, 1, 5, false);
-            ws.getCells().importArray(trajectoryVertical, 2, 5);
-            ws.getCharts().clear();
-
-            int chartIndex = ws.getCharts().add(ChartType.LINE, 1, 9, 30, 24);
-            Chart lineChart = ws.getCharts().get(chartIndex);
-            lineChart.setName("Trajectory");
-
-            String seriesRegex = String.format("H3:H%d", dataCount + 2);
-            lineChart.setChartDataRange(seriesRegex, true);
-            lineChart.getCategoryAxis().setMinValue(0);
-            lineChart.getCategoryAxis().setMaxValue(maxDistance);
-            lineChart.getNSeries().clear();
-
-            String categoryRegex = String.format("F3:G%d", dataCount + 2);
-            int seriesIndex = lineChart.getNSeries().add(seriesRegex, true);
-            Series series = lineChart.getNSeries().get(seriesIndex);
-            series.setXValues(categoryRegex);
-            series.setName("");
-
-            wb.save(output.getPath());
+            workbook.write(outputStream);
+            outputStream.close();
+            workbook.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -208,13 +180,6 @@ public class AppController implements Initializable {
         Platform.exit();
     }
 
-    private double[] parseParams(String[] params){
-        double[] res = new double[6];
-        for(int i = 0; i < 6; i++){
-            res[i] = Double.parseDouble(params[i]);
-        }
-        return res;
-    }
     private String[][] getParamsString(){
         String[] paramNames = {"Starting Speed:", "Starting Angle:", "Starting height", "Bullet mass", "Bullet diameter", "Air density"};
         String[] paramUnits = {"m/s", "degrees", "m", "g", "mm", "kg/m3"};
@@ -227,6 +192,78 @@ public class AppController implements Initializable {
         }
 
         return res;
+    }
+
+    private void writeXSSFSheet(XSSFWorkbook workbook, ProjectileModel model){
+        XSSFSheet sheet = workbook.createSheet();
+        for(int i = 0; i < dataCount + 5; i++) sheet.createRow(i);
+        for(int i = 1; i <= 3; i++) sheet.setColumnWidth(i, 5000);
+
+        String[][] paramData = getParamsString();
+        for(int i = 0; i < paramData.length; i++){
+            XSSFRow row = (XSSFRow) sheet.getRow(i + 1);
+            for(int j = 0; j < paramData[0].length; j++){
+                Cell cell =  row.createCell(j + 1);
+                cell.setCellValue(paramData[i][j]);
+            }
+        }
+
+        model.setDataPoints(dataCount);
+        model.plotTrajectory();
+        ArrayList<Vector> dataPlot = model.getTrajectoryPlot();
+        ArrayList<Double> timePlot = model.getTimePlot();
+
+        XSSFRow headerRow = (XSSFRow) sheet.getRow(1);
+        headerRow.createCell(5).setCellValue("Time:");
+        headerRow.createCell(6).setCellValue("Distance:");
+        headerRow.createCell(7).setCellValue("Height:");
+
+        for(int i = 0; i < dataPlot.size(); i++){
+            XSSFRow row = (XSSFRow) sheet.getRow(i + 2);
+            row.createCell(5).setCellValue(timePlot.get(i));
+            row.createCell(6).setCellValue(dataPlot.get(i).x);
+            row.createCell(7).setCellValue(dataPlot.get(i).y);
+        }
+
+        XSSFDrawing drawing = (XSSFDrawing) sheet.createDrawingPatriarch();
+        XSSFClientAnchor anchor = drawing.createAnchor(0, 0, 0, 0, 9, 1, 24, 30);
+
+        XSSFChart chart = drawing.createChart(anchor);
+        chart.setTitleText("Trajectory");
+        chart.setTitleOverlay(false);
+
+        XDDFChartLegend legend = chart.getOrAddLegend();
+        legend.setPosition(LegendPosition.TOP_RIGHT);
+
+        XDDFCategoryAxis bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
+        bottomAxis.setTitle("Distance/Time");
+
+        XDDFValueAxis leftAxis = chart.createValueAxis(AxisPosition.LEFT);
+        leftAxis.setTitle("Height");
+
+        XDDFNumericalDataSource<Double> timeData = XDDFDataSourcesFactory.fromNumericCellRange(
+                sheet, new CellRangeAddress(2, dataCount + 1, 5, 5)
+        );
+        XDDFNumericalDataSource<Double> distanceData = XDDFDataSourcesFactory.fromNumericCellRange(
+                sheet, new CellRangeAddress(2, dataCount + 1, 6, 6)
+        );
+        XDDFNumericalDataSource<Double> heightData = XDDFDataSourcesFactory.fromNumericCellRange(
+                sheet, new CellRangeAddress(2, dataCount + 1, 7, 7)
+        );
+
+        XDDFLineChartData data = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, leftAxis);
+
+        XDDFLineChartData.Series series1 = (XDDFLineChartData.Series) data.addSeries(timeData, heightData);
+        series1.setTitle("Trajectory", null);
+        series1.setSmooth(true);
+        series1.setMarkerStyle(MarkerStyle.CIRCLE);
+
+        XDDFLineChartData.Series series2 = (XDDFLineChartData.Series) data.addSeries(distanceData, heightData);
+        series2.setTitle("Trajectory", null);
+        series2.setSmooth(true);
+        series2.setMarkerStyle(MarkerStyle.CIRCLE);
+
+        chart.plot(data);
     }
 
 }

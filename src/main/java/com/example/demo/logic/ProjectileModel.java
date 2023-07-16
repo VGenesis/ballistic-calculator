@@ -61,6 +61,7 @@ public class ProjectileModel {
 
             currentVelocity.x -= airResistance * Math.pow(currentVelocity.x, 2);
             currentVelocity.y -= airResistance * Math.pow(currentVelocity.y, 2) * Math.signum(currentVelocity.y);
+
             double gravity = 9.81;
             currentVelocity.y -= gravity * delta;
 
