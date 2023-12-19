@@ -1,5 +1,5 @@
 # Ballistic Calculator
-> *Version 1.1*
+> *Version 1.1.1*
 
 A simple to use GUI application for calculating projectile trajectory based on the principles of projectile motion.
 
