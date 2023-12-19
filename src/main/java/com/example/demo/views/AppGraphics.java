@@ -39,9 +39,8 @@ public class AppGraphics {
             ProjectileModel model = new ProjectileModel(formData[0], formData[1], formData[2], formData[3], formData[4], formData[5]);
 
             int dataPoints = 100;
-            model.setDataPoints(dataPoints);
-            model.plotTrajectory();
-            this.dataPlot = model.getTrajectoryPlot();
+            model.plot(dataPoints);
+            this.dataPlot = model.getDataPlot();
             this.timePlot = model.getTimePlot();
 
             this.maxMeasure = new Vector(0, 0);

@@ -8,6 +8,14 @@ public class Vector {
         this.y = y;
     }
 
+    public double intensity(){
+        return Math.sqrt(x*x + y*y);
+    }
+
+    public double angle(){
+        return Math.atan2(y, x);
+    }
+
     @Override
     public String toString(){
         return "[ " + x + ", " + y + "]";

@@ -1,14 +1,9 @@
 package com.example.demo.controllers;
 
-import com.example.demo.logic.RetentionFileChooser;
 import com.example.demo.logic.Vector;
-import javafx.scene.chart.XYChart;
+import com.example.demo.logic.RetentionFileChooser;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xddf.usermodel.PresetColor;
-import org.apache.poi.xddf.usermodel.XDDFColor;
-import org.apache.poi.xddf.usermodel.XDDFSolidFillProperties;
 import org.apache.poi.xddf.usermodel.chart.*;
 import org.apache.poi.xssf.usermodel.*;
 
@@ -24,13 +19,9 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.openxmlformats.schemas.drawingml.x2006.main.CTPresetColor;
-import org.openxmlformats.schemas.drawingml.x2006.main.CTSchemeColor;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -107,13 +98,13 @@ public class AppController implements Initializable {
             if (exportFile == null) {
                 URL url = this.getClass().getResource("export_options.txt");
                 exportFile = Files.createTempFile(null, ".txt");
+                assert url != null;
                 InputStream in = url.openStream();
                 OutputStream out = Files.newOutputStream(exportFile);
                 in.transferTo(out);
                 in.close();
                 out.close();
             }
-
             rfc.setConfigFilePath(exportFile.toString());
             rfc.setFormat("XLSX");
 
@@ -208,9 +199,8 @@ public class AppController implements Initializable {
             }
         }
 
-        model.setDataPoints(dataCount);
-        model.plotTrajectory();
-        ArrayList<Vector> dataPlot = model.getTrajectoryPlot();
+        model.plot(dataCount);
+        ArrayList<Vector> dataPlot = model.getDataPlot();
         ArrayList<Double> timePlot = model.getTimePlot();
 
         XSSFRow headerRow = (XSSFRow) sheet.getRow(1);

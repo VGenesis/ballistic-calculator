@@ -23,7 +23,7 @@ public class AppWindow extends Application {
         window.setTitle("Ballistic Calculator");
         window.setScene(scene);
         window.setResizable(false);
-        window.getIcons().add(new Image(Objects.requireNonNull(AppWindow.class.getResource("icon.png")).toString()));
+        window.getIcons().add(new Image(Objects.requireNonNull(this.getClass().getResource("icon.png")).toString()));
         window.show();
     }
 

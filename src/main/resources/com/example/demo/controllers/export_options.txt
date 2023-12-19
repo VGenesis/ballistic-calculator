@@ -1,4 +1,7 @@
-XLSX default folder=C:\
+Windows default folder=C:/
+Linux default folder=/mnt/sda1
+
+XLSX default folder=
 XLSX default filename=
 CSV default folder=
 CSV default filename=

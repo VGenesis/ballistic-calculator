@@ -6,12 +6,15 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 
 public class RetentionFileChooser {
     FileChooser chooser;
     String configFilePath;
     String format;
+
+    String defaultFormat;
 
     public RetentionFileChooser(){
         this.chooser = new FileChooser();
@@ -50,8 +53,13 @@ public class RetentionFileChooser {
         try {
             BufferedReader br = new BufferedReader(new FileReader(this.configFilePath));
 
+            String os = System.getProperty("os.name");
             String line = br.readLine();
             while(line != null){
+                if(line.contains(os)){
+                    int separator = line.indexOf("=");
+                    defaultFormat = line.substring(separator+1).trim();
+                }
                 if(line.contains(format)){
                     int separator = line.indexOf("=");
                     int index = (line.contains("folder"))? 0 : 1;
@@ -60,9 +68,11 @@ public class RetentionFileChooser {
 
                 line = br.readLine();
             }
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        if(Objects.equals(res[0], "")) res[0] = defaultFormat;
         return res;
     }
 
@@ -87,7 +97,7 @@ public class RetentionFileChooser {
 
                     int filenameIndex = 0;
                     int currentIndex;
-                    while((currentIndex = path.indexOf("\\", filenameIndex + 1)) != -1)
+                    while((currentIndex = path.indexOf("/", filenameIndex + 1)) != -1)
                         filenameIndex = currentIndex;
 
                     if(isFolder){
