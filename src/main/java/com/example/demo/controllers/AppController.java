@@ -95,24 +95,43 @@ public class AppController implements Initializable {
             File output = rfc.showSaveDialog(stage, "Title".describeConstable());
             if(output == null) return;
 
-            FileOutputStream outputStream = new FileOutputStream(output);
-            XSSFWorkbook workbook = new XSSFWorkbook();
+            switch(rfc.getFormat()){
+                case ".xlsx":
+                    exportXLSX(output);
+                    break;
+                case ".csv":
+                    exportCSV(output);
+                    break;
+                case ".json":
+                    exportJSON(output);
+                    break;
 
-            ProjectileModel model = new ProjectileModel(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4], parameters[5]);
-            try {
-                writeXSSFSheet(workbook, model);
-            }catch(Exception e){
-                System.out.println("Failed to create Excel sheet.");
-                return;
             }
-
-            workbook.write(outputStream);
-            outputStream.close();
-            workbook.close();
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
         }
     }
+
+    void exportXLSX(File output) throws FileNotFoundException {
+        FileOutputStream outputStream = new FileOutputStream(output);
+        XSSFWorkbook workbook = new XSSFWorkbook();
+
+        ProjectileModel model = new ProjectileModel(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4], parameters[5]);
+        try {
+            writeXSSFSheet(workbook, model);
+            workbook.write(outputStream);
+            outputStream.close();
+            workbook.close();
+        }catch(Exception e){
+            System.out.println("Failed to create Excel sheet.");
+            return;
+        }
+
+    }
+
+    void exportCSV(File output){}
+
+    void exportJSON(File output){}
 
     @FXML
     void importParams(ActionEvent ignoredEvent) {

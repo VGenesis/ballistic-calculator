@@ -3,7 +3,7 @@ APP_TYPE="deb"
 APP_VERSION="1.1.1"
 
 JAR_FOLDER=out/artifacts/demo_jar
-JAR_FILE=demo.jar
+JAR_FILE=demo_jar.jar
 MAIN_CLASS=com.example.demo.App
 
 DEST=pkg
@@ -30,7 +30,7 @@ deb: $(JAVA_SRCS)
 		--dest $(DEST) \
 		--icon $(ICON) \
 		--module-path $(MODULE_PATH) \
-		--add_modules $(MODULES)
+		--add-modules $(MODULES)
 
 msi: $(JAVA_SRCS)
 	mkdir -p $(DEST)
@@ -44,7 +44,7 @@ msi: $(JAVA_SRCS)
 		--dest $(DEST) \
 		--icon $(ICON) \
 		--module-path $(MODULE_PATH) \
-		--add_modules $(MODULES) \
+		--add-modules $(MODULES) \
 		--win-shortcut \
 		--win-menu \
 		--win-dir-chooser
