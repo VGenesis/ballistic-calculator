@@ -35,7 +35,7 @@ public class AppGraphics {
 
     public void updateParams(double[] formData){
         if (formData.length == 7){
-            ProjectileModel model = new ProjectileModel(formData[0], formData[1], formData[2], formData[3], formData[4], formData[5]);
+            ProjectileModel model = new ProjectileModel(formData[0], formData[1], formData[2], formData[3], formData[4], formData[5], formData[6]);
 
             int dataPoints = 100;
             model.plot(dataPoints);

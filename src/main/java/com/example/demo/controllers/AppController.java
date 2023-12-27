@@ -116,7 +116,7 @@ public class AppController implements Initializable {
         FileOutputStream outputStream = new FileOutputStream(output);
         XSSFWorkbook workbook = new XSSFWorkbook();
 
-        ProjectileModel model = new ProjectileModel(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4], parameters[5]);
+        ProjectileModel model = new ProjectileModel(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4], parameters[5], parameters[6]);
         try {
             writeXSSFSheet(workbook, model);
             workbook.write(outputStream);

@@ -4,18 +4,18 @@ import java.util.ArrayList;
 
 public class ProjectileModel {
     private final double gravity = 9.81;
-    private final double dragCoefficient = 0.05;
     private final double delta = 0.01;
     private final Vector startingVelocity;
     private final Vector startingPosition;
     private final double projectileMass;
     private double projectileDiameter = 0;
     private double airDensity = 0;
+    private double dragCoefficient = 0.05;
 
     private ArrayList<Vector> dataPlot;
     private ArrayList<Double> timePlot;
 
-    public ProjectileModel(double startingVelocity, double startingAngle, double startingHeight, double projectileMass, double projectileDiameterInMM, double airDensity){
+    public ProjectileModel(double startingVelocity, double startingAngle, double startingHeight, double projectileMass, double projectileDiameterInMM, double airDensity, double dragCoefficient){
         this.startingVelocity = new Vector(
                 startingVelocity * Math.cos(Math.toRadians(startingAngle)),
                 startingVelocity * Math.sin(Math.toRadians(startingAngle))
@@ -24,6 +24,7 @@ public class ProjectileModel {
         this.projectileMass = projectileMass / 1000.0;
         this.projectileDiameter = projectileDiameterInMM / 1000;
         this.airDensity = (airDensity != 0)? airDensity : 1.204;
+        this.dragCoefficient = dragCoefficient;
 
         this.dataPlot = new ArrayList<>();
         this.timePlot = new ArrayList<>();
@@ -53,7 +54,6 @@ public class ProjectileModel {
             currentVelocity.x -= deceleration * Math.cos(currentVelocity.angle());
             currentVelocity.y -= deceleration * Math.sin(currentVelocity.angle()) * Math.signum(currentVelocity.y);
             currentVelocity.y -= gravity * delta;
-
 
             if(finishedMoving(currentVelocity, currentPosition)) {
                 dataPlot = Interpolation.interpolatePositionTrajectory(dataPlot, plotPointCount);
