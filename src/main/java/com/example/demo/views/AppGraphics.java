@@ -13,10 +13,9 @@ public class AppGraphics {
     public Vector canvasMousePosition;
     public ArrayList<Vector> dataPlot = null;
     public ArrayList<Double> timePlot = null;
-    private Vector maxMeasure = null;
-    private ArrayList<Vector> graphPlotPoints = new ArrayList<>();
-    private double graphScale = 1.0;
+    public Vector maxMeasure = null;
 
+    private ArrayList<Vector> graphPlotPoints = new ArrayList<>();
     private final Color bgColor = Color.valueOf("#111");
     private final Color darkgreen = Color.DARKGREEN;
     private final Color green = Color.GREEN;
@@ -43,13 +42,13 @@ public class AppGraphics {
             this.dataPlot = model.getDataPlot();
             this.timePlot = model.getTimePlot();
 
+
             this.maxMeasure = new Vector(0, 0);
             for (Vector measure : dataPlot) {
                 if (maxMeasure.x < measure.x) maxMeasure.x = measure.x;
                 if (maxMeasure.y < measure.y) maxMeasure.y = measure.y;
             }
 
-            this.graphScale = formData[6];
             this.updateChart();
         }
     }
@@ -98,7 +97,7 @@ public class AppGraphics {
                     graphOriginY + graphMeasureLineLength
             );
             gc.strokeText(
-                    String.format("%7.2f", maxMeasure.x * graphScale * i / graphMeasureCountX),
+                    String.format("%7.2f", maxMeasure.x * i / graphMeasureCountX),
                     graphOriginX + i * measureGapX - 20,
                     graphOriginY + canvasMargin / 2
             );
@@ -112,7 +111,7 @@ public class AppGraphics {
                     graphOriginY - i * measureGapY
             );
             gc.strokeText(
-                    String.format("%7.2f", maxMeasure.y * graphScale * i / graphMeasureCountY),
+                    String.format("%7.2f", maxMeasure.y * i / graphMeasureCountY),
                     graphOriginX - 1.75 * canvasMargin,
                     graphOriginY - i * measureGapY + 5
             );
@@ -167,19 +166,25 @@ public class AppGraphics {
         double canvasHeight = canvas.getHeight();
         double canvasMargin = 40;
 
-        double graphOriginX = 2 * canvasMargin;
         double graphOriginY = canvasHeight - canvasMargin;
         double graphWidth = canvasWidth - 4 * canvasMargin;
-
-        double graphPointDistance = graphWidth / graphPlotPoints.size();
         double mousePositionX = canvasMousePosition.x;
-        double mouseGraphPosition = mousePositionX - graphOriginX;
-        double mousePointPosition = Math.round(mouseGraphPosition / graphPointDistance);
+
+        int closestPointIndex = 0;
+        double closestDistance = graphWidth;
+        for(int i = 0; i < graphPlotPoints.size(); i++){
+            Vector point = graphPlotPoints.get(i);
+            double distance = Math.abs(mousePositionX - point.x);
+            if(distance < closestDistance){
+                closestPointIndex = i;
+                closestDistance = distance;
+            }
+        }
 
         try {
-            Vector selectedGraphPoint = graphPlotPoints.get((int) mousePointPosition);
-            Vector selectedTrajectoryPoint = dataPlot.get((int) mousePointPosition);
-            double selectedTimePoint = timePlot.get((int) mousePointPosition);
+            Vector selectedGraphPoint = graphPlotPoints.get(closestPointIndex);
+            Vector selectedTrajectoryPoint = dataPlot.get(closestPointIndex);
+            double selectedTimePoint = timePlot.get(closestPointIndex);
 
             this.updateChart();
 
@@ -188,7 +193,7 @@ public class AppGraphics {
 
                 gc.setStroke(lightgreen);
                 gc.strokeText(
-                        String.format("t:   %7.2f s\nX: %7.2f m\nY: %7.2f m", selectedTimePoint * graphScale, selectedTrajectoryPoint.x * graphScale, selectedTrajectoryPoint.y * graphScale),
+                        String.format("t:   %7.2f s\nX: %7.2f m\nY: %7.2f m", selectedTimePoint, selectedTrajectoryPoint.x,  selectedTrajectoryPoint.y),
                         selectedGraphPoint.x + 10,
                         selectedGraphPoint.y - 30
                 );

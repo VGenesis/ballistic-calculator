@@ -2,6 +2,7 @@ package com.example.demo.controllers;
 
 import com.example.demo.logic.Vector;
 import com.example.demo.logic.RetentionFileChooser;
+import javafx.application.Application;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xddf.usermodel.chart.*;
@@ -28,10 +29,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ResourceBundle;
+import java.util.Optional;
 
 public class AppController implements Initializable {
-    @FXML
-    private MenuItem aboutMenuItem;
     @FXML
     private TextField angleField;
     @FXML
@@ -39,60 +39,45 @@ public class AppController implements Initializable {
     @FXML
     private TextField diameterField;
     @FXML
-    private MenuItem exportMenuCSV;
-    @FXML
-    private MenuItem exportMenuJSON;
-    @FXML
-    private MenuItem exportMenuXLSX;
-    @FXML
     private TextField heightField;
-    @FXML
-    private MenuItem importMenuCSV;
-    @FXML
-    private MenuItem importMenuJSON;
-    @FXML
-    private MenuItem importMenuParams;
-    @FXML
-    private MenuItem importMenuXLSX;
     @FXML
     private TextField massField;
     @FXML
-    private MenuItem quitMenuItem;
-    @FXML
-    private TextField scaleField;
-    @FXML
     private TextField speedField;
     @FXML
+    private TextField dragCoeffField;
+    @FXML
+    private TextField distanceField;
+
+    @FXML
+    private MenuItem aboutMenuItem;
+    @FXML
+    private MenuItem exportMenu;
+    @FXML
+    private MenuItem importMenuParams;
+    @FXML
+    private MenuItem importMenuGraph;
+    @FXML
+    private MenuItem quitMenuItem;
+
+    @FXML
     private Canvas trajectoryCanvas;
+
     private AppGraphics graphics;
     public Stage window;
-    public AboutWindow aboutWindow;
-    private double[] parameters = new double[7];
+    public AboutWindow aboutWindow = null;
+    private double[] parameters = null;
     private final int dataCount = 30;
-
     private Path exportFile;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.graphics = new AppGraphics(trajectoryCanvas);
-        this.aboutWindow = null;
-        this.parameters = new double[7];
-        Arrays.fill(parameters, 0);
     }
 
     @FXML
-    void exportCSV(ActionEvent ignoredEvent) {
-
-    }
-
-    @FXML
-    void exportJSON(ActionEvent ignoredEvent) {
-
-    }
-
-    @FXML
-    void exportXLSX(ActionEvent ignoredEvent) throws IOException {
-        try {
+    void export(){
+        try{
             RetentionFileChooser rfc = new RetentionFileChooser();
 
             if (exportFile == null) {
@@ -105,35 +90,28 @@ public class AppController implements Initializable {
                 in.close();
                 out.close();
             }
-            rfc.setConfigFilePath(exportFile.toString());
-            rfc.setFormat("XLSX");
 
             Stage stage = new Stage();
-            File output = rfc.showSaveDialog(stage, "Select XLSX file:".describeConstable());
+            File output = rfc.showSaveDialog(stage, "Title".describeConstable());
             if(output == null) return;
 
             FileOutputStream outputStream = new FileOutputStream(output);
             XSSFWorkbook workbook = new XSSFWorkbook();
 
             ProjectileModel model = new ProjectileModel(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4], parameters[5]);
-            writeXSSFSheet(workbook, model);
+            try {
+                writeXSSFSheet(workbook, model);
+            }catch(Exception e){
+                System.out.println("Failed to create Excel sheet.");
+                return;
+            }
 
             workbook.write(outputStream);
             outputStream.close();
             workbook.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getLocalizedMessage());
         }
-    }
-
-    @FXML
-    void importCSV(ActionEvent ignoredEvent) {
-
-    }
-
-    @FXML
-    void importJSON(ActionEvent ignoredEvent) {
-
     }
 
     @FXML
@@ -142,23 +120,27 @@ public class AppController implements Initializable {
     }
 
     @FXML
-    void importXLSX(ActionEvent ignoredEvent) {
+    void importGraph(ActionEvent ignoredEvent) {
 
     }
 
     @FXML
     void onParameterUpdate(KeyEvent ignoredEvent) {
         try {
+            parameters = new double[7];
             parameters[0] = Double.parseDouble(speedField.getText());
             parameters[1] = Double.parseDouble(angleField.getText());
             parameters[2] = Double.parseDouble(heightField.getText());
             parameters[3] = Double.parseDouble(massField.getText());
             parameters[4] = Double.parseDouble(diameterField.getText());
             parameters[5] = Double.parseDouble(densityField.getText());
-            parameters[6] = Double.parseDouble(scaleField.getText());
+            parameters[6] = Double.parseDouble(dragCoeffField.getText());
 
             graphics.updateParams(parameters);
-        }catch(NumberFormatException ignored){}
+            distanceField.setText(String.format("%.2f", graphics.maxMeasure.x));
+        }catch(NumberFormatException e){
+            parameters = null;
+        }
     }
 
     @FXML
@@ -171,7 +153,9 @@ public class AppController implements Initializable {
         Platform.exit();
     }
 
-    private String[][] getParamsString(){
+    private String[][] getParamsString() throws IllegalArgumentException{
+        if(parameters == null) throw new IllegalArgumentException("Simulation parameters are uninitialized");
+
         String[] paramNames = {"Starting Speed:", "Starting Angle:", "Starting height", "Bullet mass", "Bullet diameter", "Air density"};
         String[] paramUnits = {"m/s", "degrees", "m", "g", "mm", "kg/m3"};
 
@@ -190,18 +174,27 @@ public class AppController implements Initializable {
         for(int i = 0; i < dataCount + 5; i++) sheet.createRow(i);
         for(int i = 1; i <= 3; i++) sheet.setColumnWidth(i, 5000);
 
-        String[][] paramData = getParamsString();
-        for(int i = 0; i < paramData.length; i++){
-            XSSFRow row = (XSSFRow) sheet.getRow(i + 1);
-            for(int j = 0; j < paramData[0].length; j++){
-                Cell cell =  row.createCell(j + 1);
-                cell.setCellValue(paramData[i][j]);
+        try {
+            String[][] paramData = getParamsString();
+
+            for(int i = 0; i < paramData.length; i++){
+                XSSFRow row = (XSSFRow) sheet.getRow(i + 1);
+                for(int j = 0; j < paramData[0].length; j++){
+                    Cell cell =  row.createCell(j + 1);
+                    cell.setCellValue(paramData[i][j]);
+                }
             }
+        }catch(IllegalArgumentException e){
+            System.out.println(e.getLocalizedMessage());
+            return;
         }
+
 
         model.plot(dataCount);
         ArrayList<Vector> dataPlot = model.getDataPlot();
         ArrayList<Double> timePlot = model.getTimePlot();
+
+        System.out.println("Here");
 
         XSSFRow headerRow = (XSSFRow) sheet.getRow(1);
         headerRow.createCell(5).setCellValue("Time:");

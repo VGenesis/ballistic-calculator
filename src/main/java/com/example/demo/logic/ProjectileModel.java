@@ -32,7 +32,6 @@ public class ProjectileModel {
     public ArrayList<Vector> getDataPlot() {return dataPlot;}
     public ArrayList<Double> getTimePlot() {return timePlot;}
 
-
     public void plot(int plotPointCount) {
         Vector currentPosition = new Vector(startingPosition.x, startingPosition.y);
         Vector currentVelocity = startingVelocity;
@@ -55,11 +54,14 @@ public class ProjectileModel {
             currentVelocity.y -= deceleration * Math.sin(currentVelocity.angle()) * Math.signum(currentVelocity.y);
             currentVelocity.y -= gravity * delta;
 
+
             if(finishedMoving(currentVelocity, currentPosition)) {
                 dataPlot = Interpolation.interpolatePositionTrajectory(dataPlot, plotPointCount);
                 dataPlot.add(currentPosition);
+
                 timePlot = Interpolation.interpolateRealTrajectory(timePlot, plotPointCount);
                 timePlot.add(currentTime);
+
                 return;
             }
 
